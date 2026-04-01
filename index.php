@@ -29,70 +29,118 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Pembayaran</title>
     <style>
         body {
-            font-family: Arial;
-            background: #f4f6f9;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            margin: 0;
         }
-        .container {
-            width: 400px;
-            margin: 50px auto;
+
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 380px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
+
         h2 {
             text-align: center;
+            margin-bottom: 20px;
+            color: #333;
         }
-        input, select, button {
+
+        label {
+            font-size: 14px;
+            color: #555;
+        }
+
+        input, select {
             width: 100%;
             padding: 10px;
-            margin-top: 10px;
+            margin-top: 6px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
         }
+
+        input:focus, select:focus {
+            border-color: #4facfe;
+            outline: none;
+        }
+
         button {
-            background: #007bff;
-            color: white;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4facfe, #00c6ff);
             border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
             cursor: pointer;
+            transition: 0.3s;
         }
+
         button:hover {
-            background: #0056b3;
+            transform: scale(1.03);
+            opacity: 0.9;
         }
-        .hasil {
+
+        .result {
             margin-top: 20px;
-            padding: 10px;
-            background: #e9f7ef;
-            border-left: 5px solid green;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f1fdf5;
+            border-left: 5px solid #28a745;
+        }
+
+        .result strong {
+            color: #333;
+        }
+
+        .divider {
+            height: 1px;
+            background: #ddd;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Form Pembayaran</h2>
+<div class="wrapper">
+    <div class="card">
+        <h2>💳 Pembayaran</h2>
 
-    <form method="POST">
-        <label>Jumlah (Rp)</label>
-        <input type="number" name="jumlah" required>
+        <form method="POST">
+            <label>Jumlah (Rp)</label>
+            <input type="number" name="jumlah" placeholder="Contoh: 100000" required>
 
-        <label>Metode Pembayaran</label>
-        <select name="metode" required>
-            <option value="">-- Pilih --</option>
-            <option value="transfer">Transfer Bank</option>
-            <option value="ewallet">E-Wallet</option>
-            <option value="qris">QRIS</option>
-        </select>
+            <label>Metode Pembayaran</label>
+            <select name="metode" required>
+                <option value="">-- Pilih Metode --</option>
+                <option value="transfer">🏦 Transfer Bank</option>
+                <option value="ewallet">📱 E-Wallet</option>
+                <option value="qris">🔳 QRIS</option>
+            </select>
 
-        <button type="submit">Bayar</button>
-    </form>
+            <button type="submit">Bayar Sekarang</button>
+        </form>
 
-    <?php if ($hasil != ""): ?>
-        <div class="hasil">
-            <strong>Hasil:</strong><br>
-            <?= $hasil ?><br><br>
-            <strong>Struk:</strong><br>
-            <?= $struk ?>
-        </div>
-    <?php endif; ?>
+        <?php if ($hasil != ""): ?>
+            <div class="result">
+                <strong>Hasil Transaksi</strong>
+                <div class="divider"></div>
+                <?= $hasil ?><br><br>
+                <?= $struk ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
 
 </body>
