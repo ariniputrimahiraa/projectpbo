@@ -1,146 +1,136 @@
-<?php
-require_once 'TransferBank.php';
-require_once 'Ewallet.php';
-require_once 'QRIS.php';
-
-$hasil = "";
-$struk = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $jumlah = $_POST['jumlah'];
-    $metode = $_POST['metode'];
-
-    if ($metode == "transfer") {
-        $bayar = new TransferBank($jumlah);
-    } elseif ($metode == "ewallet") {
-        $bayar = new Ewallet($jumlah);
-    } elseif ($metode == "qris") {
-        $bayar = new QRIS($jumlah);
-    }
-
-    $hasil = $bayar->prosesPembayaran();
-    $struk = $bayar->cetakStruk();
-}
-?>
-
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Pembayaran</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            margin: 0;
-        }
-
-        .wrapper {
+            background-color: #f4f6f8;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
 
-        .card {
-            background: white;
-            width: 380px;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        .container {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             color: #333;
         }
 
         label {
-            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
             color: #555;
+            font-size: 14px;
         }
 
         input, select {
             width: 100%;
             padding: 10px;
-            margin-top: 6px;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            border: 1px solid #ccc;
             font-size: 14px;
+            transition: 0.2s;
         }
 
         input:focus, select:focus {
-            border-color: #4facfe;
+            border-color: #6c8cff;
             outline: none;
         }
 
         button {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #4facfe, #00c6ff);
+            background-color: #6c8cff;
             border: none;
             border-radius: 8px;
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
         }
 
         button:hover {
-            transform: scale(1.03);
-            opacity: 0.9;
+            background-color: #5a76e0;
         }
 
         .result {
             margin-top: 20px;
+            background: #f8f9fb;
             padding: 15px;
-            border-radius: 10px;
-            background: #f1fdf5;
-            border-left: 5px solid #28a745;
+            border-radius: 8px;
+            font-size: 14px;
         }
 
-        .result strong {
-            color: #333;
-        }
-
-        .divider {
-            height: 1px;
-            background: #ddd;
-            margin: 10px 0;
+        .result hr {
+            border: none;
+            border-top: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="card">
-        <h2>💳 Pembayaran</h2>
+<div class="container">
+    <h2>Form Pembayaran</h2>
 
-        <form method="POST">
-            <label>Jumlah (Rp)</label>
-            <input type="number" name="jumlah" placeholder="Contoh: 100000" required>
+    <form method="POST">
+        <label>Jumlah Pembayaran</label>
+        <input type="number" name="jumlah" required>
 
-            <label>Metode Pembayaran</label>
-            <select name="metode" required>
-                <option value="">-- Pilih Metode --</option>
-                <option value="transfer">🏦 Transfer Bank</option>
-                <option value="ewallet">📱 E-Wallet</option>
-                <option value="qris">🔳 QRIS</option>
-            </select>
+        <label>Metode Pembayaran</label>
+        <select name="metode" required>
+            <option value="">-- Pilih Metode --</option>
+            <option value="transfer">Transfer Bank</option>
+            <option value="ewallet">E-Wallet</option>
+            <option value="qris">QRIS</option>
+            <option value="cod">COD</option>
+            <option value="va">Virtual Account</option>
+        </select>
 
-            <button type="submit">Bayar Sekarang</button>
-        </form>
+        <button type="submit" name="proses">Proses Pembayaran</button>
+    </form>
 
-        <?php if ($hasil != ""): ?>
-            <div class="result">
-                <strong>Hasil Transaksi</strong>
-                <div class="divider"></div>
-                <?= $hasil ?><br><br>
-                <?= $struk ?>
-            </div>
-        <?php endif; ?>
-    </div>
+    <?php
+    if(isset($_POST['proses'])) {
+        require_once 'transferbank.php';
+        require_once 'ewallet.php';
+        require_once 'qris.php';
+        require_once 'cod.php';
+        require_once 'va.php';
+
+        $jumlah = $_POST['jumlah'];
+        $metode = $_POST['metode'];
+
+        if($metode == "transfer") {
+            $obj = new TransferBank($jumlah);
+        } elseif($metode == "ewallet") {
+            $obj = new Ewallet($jumlah);
+        } elseif($metode == "qris") {
+            $obj = new Qris($jumlah);
+        } elseif($metode == "cod") {
+            $obj = new COD($jumlah);
+        } elseif($metode == "va") {
+            $obj = new VA($jumlah);
+        }
+
+        echo "<div class='result'>";
+        echo $obj->prosesPembayaran();
+        echo "<hr>";
+        echo $obj->cetakStruk();
+        echo "</div>";
+    }
+    ?>
 </div>
 
 </body>
