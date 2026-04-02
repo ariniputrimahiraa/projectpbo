@@ -8,7 +8,6 @@ interface Kendaraan {
 }
 
 class Motor implements Mesin, Kendaraan {
-
     public function hidupkan() {
         return "Mesin hidup";
     }
@@ -17,4 +16,11 @@ class Motor implements Mesin, Kendaraan {
         return "Motor berjalan";
     }
 }
+
+// OUTPUT
+$m = new Motor();
+
+echo $m->hidupkan();
+echo "<br>";
+echo $m->berjalan();
 ?>

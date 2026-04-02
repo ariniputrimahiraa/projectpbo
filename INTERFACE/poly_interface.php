@@ -1,28 +1,28 @@
 <?php
-interface Pembayaran {
+interface PembayaranPoly {
     public function bayar($jumlah);
 }
 
-class TransferBank implements Pembayaran {
+class TransferBankPoly implements PembayaranPoly {
     public function bayar($jumlah) {
         return "Transfer Rp $jumlah berhasil";
     }
 }
 
-class Ewallet implements Pembayaran {
+class EwalletPoly implements PembayaranPoly {
     public function bayar($jumlah) {
         return "E-wallet Rp $jumlah berhasil";
     }
 }
 
-// polymorphism
-$pembayaran = [
-    new TransferBank(),
-    new Ewallet()
+// POLYMORPHISM OUTPUT
+$list = [
+    new TransferBankPoly(),
+    new EwalletPoly()
 ];
 
-foreach ($pembayaran as $p) {
-    echo $p->bayar(100000);
+foreach ($list as $p) {
+    echo $p->bayar(75000);
     echo "<br>";
 }
 ?>
