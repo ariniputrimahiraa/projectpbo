@@ -41,12 +41,6 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
-            transition: 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: #6c8cff;
-            outline: none;
         }
 
         button {
@@ -58,11 +52,6 @@
             color: white;
             font-size: 15px;
             cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background-color: #5a76e0;
         }
 
         .result {
@@ -71,11 +60,6 @@
             padding: 15px;
             border-radius: 8px;
             font-size: 14px;
-        }
-
-        .result hr {
-            border: none;
-            border-top: 1px solid #ddd;
         }
     </style>
 </head>
@@ -87,6 +71,9 @@
     <form method="POST">
         <label>Jumlah Pembayaran</label>
         <input type="number" name="jumlah" required>
+
+        <label>Diskon (%)</label>
+        <input type="number" name="diskon" placeholder="contoh: 10">
 
         <label>Metode Pembayaran</label>
         <select name="metode" required>
@@ -101,36 +88,57 @@
         <button type="submit" name="proses">Proses Pembayaran</button>
     </form>
 
-    <?php
-    if(isset($_POST['proses'])) {
-        require_once 'transferbank.php';
-        require_once 'ewallet.php';
-        require_once 'qris.php';
-        require_once 'cod.php';
-        require_once 'va.php';
+<?php
+if(isset($_POST['proses'])) {
 
-        $jumlah = $_POST['jumlah'];
-        $metode = $_POST['metode'];
+    require_once 'transferbank.php';
+    require_once 'ewallet.php';
+    require_once 'qris.php';
+    require_once 'cod.php';
+    require_once 'va.php';
 
-        if($metode == "transfer") {
-            $obj = new TransferBank($jumlah);
-        } elseif($metode == "ewallet") {
-            $obj = new Ewallet($jumlah);
-        } elseif($metode == "qris") {
-            $obj = new Qris($jumlah);
-        } elseif($metode == "cod") {
-            $obj = new COD($jumlah);
-        } elseif($metode == "va") {
-            $obj = new VA($jumlah);
-        }
+    $jumlah = $_POST['jumlah'];
+    $diskon = isset($_POST['diskon']) ? $_POST['diskon'] : 0;
+    $metode = $_POST['metode'];
 
-        echo "<div class='result'>";
-        echo $obj->prosesPembayaran();
-        echo "<hr>";
-        echo $obj->cetakStruk();
-        echo "</div>";
+    // hitung diskon
+    $potongan = ($diskon / 100) * $jumlah;
+    $setelahDiskon = $jumlah - $potongan;
+
+    // pajak 11%
+    $pajak = 0.11 * $setelahDiskon;
+
+    // total akhir
+    $total = $setelahDiskon + $pajak;
+
+    // pilih metode
+    if($metode == "transfer") {
+        $obj = new TransferBank($total);
+    } elseif($metode == "ewallet") {
+        $obj = new Ewallet($total);
+    } elseif($metode == "qris") {
+        $obj = new Qris($total);
+    } elseif($metode == "cod") {
+        $obj = new COD($total);
+    } elseif($metode == "va") {
+        $obj = new VA($total);
     }
-    ?>
+
+    echo "<div class='result'>";
+    echo "<b>Detail Pembayaran</b><br><br>";
+    echo "Jumlah Awal: Rp $jumlah <br>";
+    echo "Diskon: $diskon% (-Rp $potongan)<br>";
+    echo "Setelah Diskon: Rp $setelahDiskon <br>";
+    echo "Pajak 11%: Rp $pajak <br>";
+    echo "<hr>";
+    echo "<b>Total Bayar: Rp $total</b><br><br>";
+    echo $obj->prosesPembayaran();
+    echo "<br>";
+    echo $obj->cetakStruk();
+    echo "</div>";
+}
+?>
+
 </div>
 
 </body>
